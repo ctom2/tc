@@ -1,0 +1,9 @@
+baseURL = 'https://ctom2.github.io/tc'
+languageCode = 'en-us'
+title = 'Tomáš Chobola'
+
+theme = 'hugo-bearblog'
+
+enableRobotsTXT = true
+
+publishDir = 'docs'
