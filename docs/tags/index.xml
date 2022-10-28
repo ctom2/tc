@@ -2,9 +2,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Tomáš Chobola</title>
-    <link>https://ctom2.github.io/tc/tags/</link>
+    <link>https://t-c.me/tags/</link>
     <description>Recent content in Tags on Tomáš Chobola</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://ctom2.github.io/tc/tags/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="https://t-c.me/tags/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

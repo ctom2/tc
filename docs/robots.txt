@@ -1,2 +1,2 @@
 User-Agent: *
-Sitemap: https://ctom2.github.io/tc/sitemap.xml
+Sitemap: https://t-c.me/sitemap.xml
