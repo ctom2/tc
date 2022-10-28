@@ -5,16 +5,6 @@
     <link>https://t-c.me/</link>
     <description>Recent content on Tomáš Chobola</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Fri, 28 Oct 2022 16:17:13 +0200</lastBuildDate><atom:link href="https://t-c.me/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Examplepost</title>
-      <link>https://t-c.me/posts/examplepost/</link>
-      <pubDate>Fri, 28 Oct 2022 16:17:13 +0200</pubDate>
-      
-      <guid>https://t-c.me/posts/examplepost/</guid>
-      <description>This is a page about »Examplepost«.</description>
-    </item>
-    
+    <language>en-us</language><atom:link href="https://t-c.me/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
