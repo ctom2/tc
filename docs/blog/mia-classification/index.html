@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Membership inference attacks on classification models | Tomáš Chobola</title>
+<meta name="title" content="Membership inference attacks on classification models" />
+<meta name="description" content="Machine learning has enabled a high degree of automation and data modelling in domains such as biology, linguistics and medicine. While the first neural network was created by Frank Rosenblatt in 1957, the real applications of the networks became prominent only in recent years. Two main factors contribute to this advancement: increased computational resources and availability of data. Data can be accessed as easily as ever and is also being produced at an accelerating rate, which allows for creating bigger and better machine learning models." />
+<meta name="keywords" content="" />
+
+
+<meta property="og:title" content="Membership inference attacks on classification models" />
+<meta property="og:description" content="Machine learning has enabled a high degree of automation and data modelling in domains such as biology, linguistics and medicine. While the first neural network was created by Frank Rosenblatt in 1957, the real applications of the networks became prominent only in recent years. Two main factors contribute to this advancement: increased computational resources and availability of data. Data can be accessed as easily as ever and is also being produced at an accelerating rate, which allows for creating bigger and better machine learning models." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://t-c.me/blog/mia-classification/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-07-08T15:31:00+02:00" />
+<meta property="article:modified_time" content="2022-07-08T15:31:00+02:00" />
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Membership inference attacks on classification models"/>
+<meta name="twitter:description" content="Machine learning has enabled a high degree of automation and data modelling in domains such as biology, linguistics and medicine. While the first neural network was created by Frank Rosenblatt in 1957, the real applications of the networks became prominent only in recent years. Two main factors contribute to this advancement: increased computational resources and availability of data. Data can be accessed as easily as ever and is also being produced at an accelerating rate, which allows for creating bigger and better machine learning models."/>
+
+
+
+<meta itemprop="name" content="Membership inference attacks on classification models">
+<meta itemprop="description" content="Machine learning has enabled a high degree of automation and data modelling in domains such as biology, linguistics and medicine. While the first neural network was created by Frank Rosenblatt in 1957, the real applications of the networks became prominent only in recent years. Two main factors contribute to this advancement: increased computational resources and availability of data. Data can be accessed as easily as ever and is also being produced at an accelerating rate, which allows for creating bigger and better machine learning models."><meta itemprop="datePublished" content="2022-07-08T15:31:00+02:00" />
+<meta itemprop="dateModified" content="2022-07-08T15:31:00+02:00" />
+<meta itemprop="wordCount" content="2039">
+<meta itemprop="keywords" content="" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: rgb(10, 13, 18);
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Tomáš Chobola</h2>
+</a>
+<nav><a href="/">Home</a>
+
+<a href="/"></a>
+
+
+<a href="/blog">Blog</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>Membership inference attacks on classification models</h1>
+<p>
+  <i>
+    <time datetime='2022-07-08' pubdate>
+      08 Jul, 2022
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>Machine learning has enabled a high degree of automation and data modelling in domains such as <a href="https://www.nature.com/articles/s41467-021-22518-0">biology</a>, <a href="https://arxiv.org/abs/2005.14165">linguistics</a> and <a href="https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-019-0681-4">medicine</a>. While the <a href="https://blogs.umass.edu/brain-wars/files/2016/03/rosenblatt-1957.pdf">first neural network</a> was created by Frank Rosenblatt in 1957, the real applications of the networks became prominent only in recent years. Two main factors contribute to this advancement: increased computational resources and availability of data. Data can be accessed as easily as ever and is also being produced at an accelerating rate, which allows for creating bigger and better machine learning models. However, oftentimes the data contain private information, which can be the case for <a href="https://www.nature.com/articles/s42256-020-0186-1">medical applications</a> or <a href="https://arxiv.org/abs/2102.04925">recommendation systems</a>. Even a brief experience with designing and testing machine learning models reveals that they are prone to overfitting, i.e., aligning the model too closely to the training data and therefore decreasing the ability to generalise (unless prevented by the expert). Overfitted models imprint the information of the training set into their weights, which leads to an <a href="https://ieeexplore.ieee.org/abstract/document/8429311">increased vulnerability</a> to attacks and subsequent private information leaks.</p>
+<blockquote>
+<p>The aim of a membership inference attack (MIA) on a model is to infer whether a data point was a member of its training dataset or not.</p>
+</blockquote>
+<p>The idea behind attacks on classification-based models is that they are <em>overconfident</em> with data samples that were included in the training dataset. During training, the model is optimised over multiple epochs and the training members are seen several times. Compared to testing data that the model sees for the first time the returned probability distribution is usually less poised and more balanced. This imposes a privacy vulnerability on the training dataset members.</p>
+<p>For example, the adversary can target a model trained on <a href="https://proceedings.mlr.press/v143/gupta21a.html">medical records</a> to predict a probability of a certain condition. Once inferring the target model with specific medical information the adversary can reveal whether that particular patient was associated with the medical condition or not violating the patient&rsquo;s privacy.</p>
+<p>MIAs are usually separated into three main types.</p>
+<ul>
+<li><strong>Black-box attack:</strong> The most restrictive attack from the view of the adversary. The only data that can be accessed from the target model is the final prediction. In classification tasks, it&rsquo;s usually the class probability distribution coming from the SoftMax activation layer. The most restrictive setting assumes the target model returns <a href="https://arxiv.org/abs/2007.14321">only the predicted class label</a>. Moreover, the adversary shouldn&rsquo;t have any information regarding the model architecture or the dataset used to train the model.</li>
+<li><strong>White-box attack:</strong> The opposite of the black-box attack where the adversary has the full knowledge about the used architecture, the training dataset, and mainly the outputs of each model&rsquo;s layers.</li>
+<li><strong>Grey-box attack:</strong> Anything that doesn&rsquo;t fall under the two categories above can be considered a grey-box attack.</li>
+</ul>
+<p>Currently, there are two main approaches used to attack the target model.</p>
+<ul>
+<li><strong>Threshold attack:</strong> The most intuitive way of exposing an input <code>x</code> as a training sample is to measure the maximum prediction confidence. If the confidence exceeds a <a href="https://arxiv.org/abs/1806.01246">predefined threshold</a>, implying the model overconfidence, the input is considered a member of the training dataset.</li>
+<li><strong>Binary classifier:</strong> The attack is carried on by a binary classifier trained on outputs of a <em>shadow model</em> that imitates the functionality of the <em>target model</em>. The shadow model is trained by the adversary to behave as close to the target model as possible. This, however, is dependent on the type of attack. In the black-box setting, the knowledge about the target model architecture or the training hyperparameters is kept from the adversary making the attack more difficult. In grey-box or even white-box settings, the adversary can more closely replicate the target model with the shadow model, leading to better performance. Once the shadow model is trained, the attacker collects its outputs by inferring it on training and testing data and assembles a training dataset for the attack model. The trained attack model can then be used to infer the outputs of the target model.</li>
+</ul>
+<p>While it is possible to do a MI attack with a single shadow model, a higher number of shadow models correlates with a better attack performance.</p>
+<p>The <a href="https://arxiv.org/abs/2009.05669">main factor</a> that contributes to the success of the attack is model overfitting. A consequence of overfitting is the gap in performance on training and testing data, which can arise from the high complexity of the target model or the limited size of the training dataset. This is something the adversary can exploit. The defence mechanism can therefore be regularisation or early stopping which prevents overfitting. It might result in a lower utility of the model, but with increased privacy and resistance to membership inference attacks.</p>
+<p>The type of the target model influences the attack outcome as well. While the attacks are carried mainly on deep models, other machine learning models are susceptible to the MI attack as well. The highest attack accuracy is obtained on models that are especially sensitive to outliers. By contrast, models that don&rsquo;t change the decision boundary easily are less prone to privacy breaches. For this reason, decision trees are the most vulnerable as a unique feature in the training data can result in a completely new branch. Naive Bayes models are, on the other hand, <a href="https://ieeexplore.ieee.org/document/8634878">affected the least</a> which makes MIAs less successful. The evaluation of the target models is done with the usual classification metrics.</p>
+<h2 id="membership-inference-attack-implemented-in-torch">Membership inference attack implemented in torch</h2>
+<p>This section covers a simple implementation of a basic membership inference attack using the <code>torch</code> library in Python. The attack is carried in a grey-box setting, meaning that we as adversaries know the architecture of the target model, the hyperparameters used during training, and also the data domain. However, we can only access the final probability distribution outputted by classification models. Our target will be a deep model that classifies handwritten numbers from the <a href="http://yann.lecun.com/exdb/mnist/">MNIST dataset</a>. We will train a single shadow model with the same architecture, but on a different dataset although from the same domain. For that, we will use the <a href="http://arxiv.org/abs/1702.05373">EMNIST dataset</a>. Both datasets contain 28x28 pixel images of handwritten symbols.</p>
+<p>For simplicity, we will use a subset of EMNIST that comprises handwritten letters as the non-members when training and testing the attack model. The attack model itself will be a simple fully-connected deep model that takes the output of the SoftMax activation from the classification models as input and returns the probability that the input was a member of their training dataset or not.</p>
+<p>Let&rsquo;s start implementing the attack by importing all necessary libraries.</p>
+<pre tabindex="0"><code>import numpy as np
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
+from torchvision import transforms
+from torchvision.datasets import EMNIST, MNIST
+from tqdm.notebook import trange
+</code></pre><p>Now we can define the architecture of the classification model that we will use for the target model and the shadow model. The models will consist of two parts; the first part uses convolutional layers to extract the most relevant features from the images and the second part applies two dense layers to produce the final prediction. MNIST and the numerical subset of EMNIST include digits from 0 to 9, and therefore the output layer will have 10 nodes.</p>
+<pre tabindex="0"><code>class ClassifierModel(nn.Module):
+    def __init__(self):
+        super(ClassifierModel, self).__init__()
+        self.stage1 = nn.Sequential(
+            nn.Conv2d(1, 16, kernel_size=3, padding=0, stride=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(16, 32, kernel_size=3, padding=0, stride=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(32, 16, kernel_size=3, padding=0, stride=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(16, 16, kernel_size=3, padding=0, stride=1),
+            nn.LeakyReLU(),
+        )
+        
+        self.stage2 = nn.Sequential(
+            nn.Linear(6400, 256),
+            nn.LeakyReLU(),
+            nn.Linear(256, 10),
+            nn.Softmax(dim=-1),
+        )
+
+    def forward(self, x):
+        out = self.stage1(x)
+        out = out.view(out.size(0), -1)
+        out = self.stage2(out)
+
+        return out
+</code></pre><p>To train and test the model we need to prepare the data. We will use a single function for that as we need to preprocess the data the same way regardless of the dataset. The type of returned images will be controlled by the parameter <code>type</code>. Since this is a simple MIA demonstration, we will limit the number of training and testing images to 2,000.</p>
+<pre tabindex="0"><code>def get_images(type, batch_size=64):
+    split = 2000
+
+    if type is &#39;mnist&#39;:
+        train_data = MNIST(
+            &#34;mnist&#34;, train=True, download=True,
+            transform=transforms.ToTensor()
+        )
+        test_data = MNIST(
+            &#34;mnist&#34;, train=False, download=True, 
+            transform=transforms.ToTensor()
+        )
+    elif type is &#39;emnist_digits&#39;:
+        train_data = EMNIST(
+            &#34;emnist&#34;, &#34;digits&#34;, train=True, download=True, 
+            transform=transforms.ToTensor()
+        )
+        test_data = EMNIST(
+            &#34;emnist&#34;, &#34;digits&#34;, train=False, download=True, 
+            transform=transforms.ToTensor()
+        )
+    elif type is &#39;emnist_letters&#39;:
+        train_data = EMNIST(
+            &#34;emnist&#34;, &#34;letters&#34;, train=True, download=True, 
+            transform=transforms.ToTensor()
+        )
+        test_data = EMNIST(
+            &#34;emnist&#34;, &#34;letters&#34;, train=False, download=True, 
+            transform=transforms.ToTensor()
+        )
+
+    train_data.data = train_data.data[:split]
+    train_data.targets = train_data.targets[:split]
+
+    test_data.data = test_data.data[:split]
+    test_data.targets = test_data.targets[:split]
+
+    train_loader = DataLoader(train_data, batch_size=batch_size)
+    test_loader = DataLoader(test_data, batch_size=batch_size)
+
+    return train_loader, test_loader
+</code></pre><p>Since every model in the implementation is a classifier, we can define a single function for training the models. The only difference is that the attack model is a binary classifier so we will use a different loss function. We will call a testing function at the end of training to evaluate how well the model generalises.</p>
+<pre tabindex="0"><code>def test_classifier(model, test_loader, criterion, attack):
+    l = [] # loss
+    p = [] # predictions
+    model.eval()
+    with torch.no_grad():
+        for data, targets in test_loader:
+            output = model(data)
+            loss = criterion(output, targets)
+
+            l.append(loss.item())
+
+            if attack:
+                r = output.round()
+                r = (r == targets).sum()/data.shape[0]
+            else:
+                r = output.argmax(dim=1)
+                r = (r == targets).sum()/data.shape[0]
+            p.append(r.item())
+
+    print(
+        &#39;Testing loss: {}, accuracy: {}&#39;.format(
+            sum(l)/len(l), sum(p)/len(p)
+         )
+    )
+</code></pre><pre tabindex="0"><code>def train_classifier(
+    model, 
+    train_loader, 
+    test_loader, 
+    epochs=10, 
+    attack=False, 
+    lr=1e-4
+):
+    opt = torch.optim.Adam(model.parameters(), lr=lr)
+    if attack:
+        criterion = nn.BCELoss()
+    else:
+        criterion = nn.CrossEntropyLoss()
+
+    model.train()
+    for epoch in trange(epochs):
+        l = [] # loss
+        p = [] # predictions
+        for data, targets in train_loader:
+            opt.zero_grad()
+            output = model(data)
+            loss = criterion(output, targets)
+            loss.backward()
+            opt.step()
+
+            l.append(loss.item())
+
+            if attack:
+                r = output.round()
+                r = (r == targets).sum()/data.shape[0]
+            else:
+                r = output.argmax(dim=1)
+                r = (r == targets).sum()/data.shape[0]
+            p.append(r.item())
+
+        print(
+            &#39;Epoch: {}, loss: {}, accuracy: {}&#39;.format(
+                epoch,sum(l)/len(l),sum(p)/len(p)
+            )
+        )
+
+    test_classifier(model, test_loader, criterion, attack)
+
+    return model
+</code></pre><p>Now we can finally train the target model.</p>
+<pre tabindex="0"><code>mnist_train_loader, mnist_test_loader = get_images(type=&#39;mnist&#39;)
+
+target_model = ClassifierModel()
+target_model = train_classifier(
+    target_model, mnist_train_loader, mnist_test_loader, epochs=50
+)
+</code></pre><p>Similarly, we need to train the shadow model. Its outputs will be used as training data for the attack model.</p>
+<pre tabindex="0"><code>emnist_train_loader,emnist_test_loader = get_images(type=&#39;emnist_digits&#39;)
+
+shadow_model = ClassifierModel()
+shadow_model = train_classifier(
+    shadow_model, emnist_train_loader, emnist_test_loader, epochs=50
+)
+</code></pre><p>When comparing the training and the testing losses the generalisation gap should be reasonably large. That indicates the overconfidence the digit classification models have on the training data.</p>
+<p>We can move on to the adversary. Let&rsquo;s first define the architecture of the attack model. We will use a simple approach with four dense layers.</p>
+<pre tabindex="0"><code>class AttackNet(nn.Module):
+    def __init__(self):
+        super(AttackNet, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(10,500),
+            nn.LeakyReLU(),
+            nn.Linear(500,500),
+            nn.LeakyReLU(),
+            nn.Linear(500,500),
+            nn.LeakyReLU(),
+            nn.Linear(500,1),
+            nn.Sigmoid(),
+        )
+        
+    def forward(self, x):
+        return self.layers(x)
+</code></pre><p>We also need to define our <code>torch</code> dataset class that will return the classification outputs together with the membership label.</p>
+<pre tabindex="0"><code>class AttackDataset(torch.utils.data.Dataset):
+    def __init__(self, data, labels):
+        self.data = data
+        self.labels = labels
+    
+    def __len__(self):
+        return len(self.labels)
+    
+    def __getitem__(self, idx):
+        data = self.data[idx]
+        label = self.labels[idx]
+            
+        return data, label
+</code></pre><p>To prepare the training and testing datasets for the attack model, we need to define a function that gathers the outputs of the digit classification models and also the corresponding membership label.</p>
+<pre tabindex="0"><code>def get_outputs(model, in_loader, out_loader):
+    in_outputs = []
+    out_outputs = []
+    model.eval() 
+    with torch.no_grad():
+        for data, _ in in_loader:
+            tmp = model(data).detach().cpu().numpy()
+            for x in tmp: in_outputs.append(x)
+
+        for data, _ in out_loader:
+            tmp = model(data).detach().cpu().numpy()
+            for x in tmp: out_outputs.append(x) 
+
+    in_outputs = np.array(in_outputs)
+    out_outputs = np.array(out_outputs)
+
+    outputs = torch.FloatTensor(
+        np.concatenate((in_outputs, out_outputs))
+    ).view((len(in_outputs) + len(out_outputs)),10)
+
+    labels = torch.cat([
+        torch.ones((len(in_outputs),1)),
+        torch.zeros((len(out_outputs),1))
+    ]).view((len(in_outputs) + len(out_outputs)),1)
+
+    return outputs, labels
+</code></pre><p>With everything prepared we can finally obtain the data loaders for the attack model.</p>
+<pre tabindex="0"><code>l1_loader, l2_loader = get_images(type=&#39;emnist_letters&#39;)
+
+victim_outputs, victim_labels = get_outputs(
+    victim_model, mnist_train_loader, l1_loader
+)
+shadow_outputs, shadow_labels = get_outputs(
+    shadow_model, emnist_train_loader, l2_loader
+)
+
+victim_data = AttackDataset(shadow_outputs, shadow_labels)
+shadow_data = AttackDataset(shadow_outputs, shadow_labels)
+
+victim_loader = DataLoader(victim_data, batch_size=64)
+shadow_loader = DataLoader(victim_data, batch_size=64)
+</code></pre><p>The final step is to initialise the binary classification model and carry on with the attack.</p>
+<pre tabindex="0"><code>attack_model = AttackNet()
+attack_model = train_classifier(
+    attack_model, shadow_loader, victim_loader, 
+    attack=True, lr=5e-5, epochs=100
+)
+</code></pre><p>The attack accuracy with this implementation should be around 70% which is a substantial success when it comes to inferring information about membership of training data samples.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Security and privacy are important topics in machine learning and with easier access to data and computation power, the vulnerabilities of deep models can be a cause for concern. Membership inference attacks in particular can reveal whether a data entry was included during the training of a model, potentially breaching the privacy of an individual.</p>
+
+</content>
+<p>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Iterative image deconvolution | Tomáš Chobola</title>
+<meta name="title" content="Iterative image deconvolution" />
+<meta name="description" content="One of the most prevalent tasks in computer vision is deblurring and image deconvolution. Algorithms capable of recovering a clear representation from a blurry image can be applied to photos captured with mobile phones&rsquo; cameras as well as professional imaging systems such as microscopes or telescopes.
+Mathematically, the image degradation can be denoted as follows.
+y = x * k &#43; n The blurred image y is formed by first convolving the sharp representation x with some kernel k and then adding noise n (e." />
+<meta name="keywords" content="" />
+
+
+<meta property="og:title" content="Iterative image deconvolution" />
+<meta property="og:description" content="One of the most prevalent tasks in computer vision is deblurring and image deconvolution. Algorithms capable of recovering a clear representation from a blurry image can be applied to photos captured with mobile phones&rsquo; cameras as well as professional imaging systems such as microscopes or telescopes.
+Mathematically, the image degradation can be denoted as follows.
+y = x * k &#43; n The blurred image y is formed by first convolving the sharp representation x with some kernel k and then adding noise n (e." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://t-c.me/blog/deconvolution/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-06-02T15:31:00+02:00" />
+<meta property="article:modified_time" content="2022-06-02T15:31:00+02:00" />
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Iterative image deconvolution"/>
+<meta name="twitter:description" content="One of the most prevalent tasks in computer vision is deblurring and image deconvolution. Algorithms capable of recovering a clear representation from a blurry image can be applied to photos captured with mobile phones&rsquo; cameras as well as professional imaging systems such as microscopes or telescopes.
+Mathematically, the image degradation can be denoted as follows.
+y = x * k &#43; n The blurred image y is formed by first convolving the sharp representation x with some kernel k and then adding noise n (e."/>
+
+
+
+<meta itemprop="name" content="Iterative image deconvolution">
+<meta itemprop="description" content="One of the most prevalent tasks in computer vision is deblurring and image deconvolution. Algorithms capable of recovering a clear representation from a blurry image can be applied to photos captured with mobile phones&rsquo; cameras as well as professional imaging systems such as microscopes or telescopes.
+Mathematically, the image degradation can be denoted as follows.
+y = x * k &#43; n The blurred image y is formed by first convolving the sharp representation x with some kernel k and then adding noise n (e."><meta itemprop="datePublished" content="2022-06-02T15:31:00+02:00" />
+<meta itemprop="dateModified" content="2022-06-02T15:31:00+02:00" />
+<meta itemprop="wordCount" content="706">
+<meta itemprop="keywords" content="" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: rgb(10, 13, 18);
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Tomáš Chobola</h2>
+</a>
+<nav><a href="/">Home</a>
+
+<a href="/"></a>
+
+
+<a href="/blog">Blog</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>Iterative image deconvolution</h1>
+<p>
+  <i>
+    <time datetime='2022-06-02' pubdate>
+      02 Jun, 2022
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>One of the most prevalent tasks in computer vision is deblurring and image deconvolution. Algorithms capable of recovering a clear representation from a blurry image can be applied to photos captured with mobile phones&rsquo; cameras as well as professional imaging systems such as <a href="https://www.nature.com/articles/s41587-021-01092-2">microscopes</a> or <a href="https://astrodoc.ca/wp-content/uploads/2017/06/Sky-and-Telescope-July-2017-Deconvolution-article.pdf">telescopes</a>.</p>
+<p>Mathematically, the image degradation can be denoted as follows.</p>
+<pre tabindex="0"><code>y = x * k + n
+</code></pre><p>The blurred image <code>y</code> is formed by first convolving the sharp representation <code>x</code> with some kernel <code>k</code> and then adding noise <code>n</code> (e.g., coming from dust on the optics or measurement errors). Both the image and the kernel can be thought of as value matrices. Each pixel in the convolved image is obtained through element-wise multiplication of the corresponding pixel in the input image and its neighboring pixels with the kernel. The final convolved image is produced by applying the kernel to each pixel in the input image.</p>
+<p><img src="/convolution.png" alt="Convolution"></p>
+<p>With the knowledge of the convolved image and the corresponding kernel, we can reverse the convolution and obtain a representation of the input image. This process is called <a href="https://reader.elsevier.com/reader/sd/pii/S1046202316305096?token=F8F547C2064FC88FAB3466F42581E4E07C091B6DBF4177B5717DA2B3B53A29D5E8F3A3CFF945F42208A03BF043E78D1A&amp;originRegion=eu-west-1&amp;originCreation=20220602154212">deconvolution</a>.</p>
+<p>For microscopes, for example, the kernel quantifies the light spread caused by defocusing or motion. Consider a pixel-sized light bead on a dark background. When the microscope is focused, the bead will resemble a pixel. When the microscope defocuses, however, the aberration spreads the light over a greater area with reduced intensity (the overall amount of light will be the same, but distributed over a larger area). In real-world scenarios, such as <a href="https://t-c.me/deconvolution/#:~:text=fluorescent%20microscopy">fluorescent microscopy</a>, the blur produced by out-of-focus equipment must be corrected and, ideally, reversed before the images can be effectively evaluated. Deblurring algorithms are typically classified as <strong>blind</strong> or <strong>non-blind</strong> based on whether or not the kernel causing the blur is known.</p>
+<p>While the <a href="https://opg.optica.org/josa/abstract.cfm?uri=josa-62-1-55">Richardson-Lucy</a> <a href="https://ui.adsabs.harvard.edu/abs/1974AJ.....79..745L/abstract">method</a>, a maximum-likelihood approach, is one of the most frequently applied non-blind deconvolution algorithms, we will focus on an even simpler method, the <a href="https://www.jstor.org/stable/2372313">Landweber iteration</a>.</p>
+<p>The Landweber method is a non-blind approach for minimising the L2 norm of the residual between the input blurred image <code>y</code> and the predicted sharp representation <code>x'</code> blurred with the known kernel <code>k</code> iteratively. While we can extract x in the frequency domain from the convolution equation above, the process is prone to producing noisy results. As a consequence, Landweber uses <a href="https://ml-cheatsheet.readthedocs.io/en/latest/gradient_descent.html">gradient descent</a> to converge to the best solution possible. The algorithm is described in the pseudocode below.</p>
+<pre tabindex="0"><code>function estimate_x(x_old, y, k):
+    lambda = 0.7
+	
+    term_1 = lambda * transpose(k)
+    term_2 = y - k * x_old
+    
+    return x_old + term_1 * term_2
+    
+
+function landweber(y, k):
+    # make initial estimate as randomly initalised matrix 
+    x = noise()
+
+    for i = 1 to 10:
+        x = estimate_x(x, y, k)
+        
+    return x
+</code></pre><p>The objective of the algorithm is to constantly enhance the estimate so that it appears as sharp as possible. The algorithm must therefore work with initial estimation, which is often generated by randomly initializing a matrix with Gaussian noise, or just by using the blurred image. The approximated image is then improved with each iteration.</p>
+<p>The number of iterations is a key component in the Landweber algorithm. Keeping the number low will cause the method to fail to reconstruct fine features, whereas increasing the number will enhance the noise in the image and add the <a href="https://www.researchgate.net/publication/320544148_Explicit_Ringing_Removal_in_Image_Deblurring">ringing effect</a>. Because the optimal number depends on the size of the image, the amount of noise in the image, and the type of visual structures, it is usually necessary to run the algorithm numerous times with different settings.</p>
+<p>The Landweber iteration is implemented in Python using <code>torch</code> in the code below. Instead of being initialized as a matrix with Gaussian noise, the first estimate is set as the input blurred image.</p>
+<pre tabindex="0"><code>import torch
+
+def lw(k0, y0, i=10):
+
+    lam = 0.8
+    kdim = k0.shape[-1]
+    
+    x0 = y0
+
+    for _ in range(i):
+
+        temp_x = torch.conv2d(x0, k0, stride=1, padding=kdim//2)
+        temp_x = y0 - temp_x
+        temp_x = torch.conv2d(
+            temp_x, 
+            torch.flip(k0, [0, 1, 2, 3]), 
+            stride=1, 
+            padding=kdim//2
+        )
+
+        x0 = x0 + lam * temp_x
+        
+    return x0
+</code></pre><p>The algorithm can be used to enhance the sharpness and contrast of blurry images like the one below, that shows the blurred image, the image deconvolved with the Landweber method, and the ground truth sharp image, respectively.</p>
+<p><img src="/milky.png" alt="Deconvolution"></p>
+
+</content>
+<p>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>

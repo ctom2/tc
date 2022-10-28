@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Implementing a simple ML model inversion attack | Tomáš Chobola</title>
+<meta name="title" content="Implementing a simple ML model inversion attack" />
+<meta name="description" content="With the increased use of machine learning applications, concerns about user privacy are emerging. In this post, I will demonstrate a model inversion (MI) attack that can reconstruct the input image solely from encoded information within a neural network.
+Why are inversion attacks problematic? Consider the medical field as an example. Assume the physicians are detecting tumors in CT scan images using machine learning algorithms. Furthermore, if the physicians submit the inference tasks to a central node to complete the computation, the information can be intercepted by an adversary who can reconstruct the input and therefore breach the patient&rsquo;s privacy." />
+<meta name="keywords" content="" />
+
+
+<meta property="og:title" content="Implementing a simple ML model inversion attack" />
+<meta property="og:description" content="With the increased use of machine learning applications, concerns about user privacy are emerging. In this post, I will demonstrate a model inversion (MI) attack that can reconstruct the input image solely from encoded information within a neural network.
+Why are inversion attacks problematic? Consider the medical field as an example. Assume the physicians are detecting tumors in CT scan images using machine learning algorithms. Furthermore, if the physicians submit the inference tasks to a central node to complete the computation, the information can be intercepted by an adversary who can reconstruct the input and therefore breach the patient&rsquo;s privacy." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://t-c.me/blog/inversion-attack/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-05-21T10:00:00+02:00" />
+<meta property="article:modified_time" content="2022-05-21T10:00:00+02:00" />
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Implementing a simple ML model inversion attack"/>
+<meta name="twitter:description" content="With the increased use of machine learning applications, concerns about user privacy are emerging. In this post, I will demonstrate a model inversion (MI) attack that can reconstruct the input image solely from encoded information within a neural network.
+Why are inversion attacks problematic? Consider the medical field as an example. Assume the physicians are detecting tumors in CT scan images using machine learning algorithms. Furthermore, if the physicians submit the inference tasks to a central node to complete the computation, the information can be intercepted by an adversary who can reconstruct the input and therefore breach the patient&rsquo;s privacy."/>
+
+
+
+<meta itemprop="name" content="Implementing a simple ML model inversion attack">
+<meta itemprop="description" content="With the increased use of machine learning applications, concerns about user privacy are emerging. In this post, I will demonstrate a model inversion (MI) attack that can reconstruct the input image solely from encoded information within a neural network.
+Why are inversion attacks problematic? Consider the medical field as an example. Assume the physicians are detecting tumors in CT scan images using machine learning algorithms. Furthermore, if the physicians submit the inference tasks to a central node to complete the computation, the information can be intercepted by an adversary who can reconstruct the input and therefore breach the patient&rsquo;s privacy."><meta itemprop="datePublished" content="2022-05-21T10:00:00+02:00" />
+<meta itemprop="dateModified" content="2022-05-21T10:00:00+02:00" />
+<meta itemprop="wordCount" content="809">
+<meta itemprop="keywords" content="" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: rgb(10, 13, 18);
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Tomáš Chobola</h2>
+</a>
+<nav><a href="/">Home</a>
+
+<a href="/"></a>
+
+
+<a href="/blog">Blog</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>Implementing a simple ML model inversion attack</h1>
+<p>
+  <i>
+    <time datetime='2022-05-21' pubdate>
+      21 May, 2022
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>With the increased use of machine learning applications, concerns about user privacy are emerging. In this post, I will demonstrate a model inversion (MI) attack that can reconstruct the input image solely from encoded information within a neural network.</p>
+<p>Why are inversion attacks problematic? Consider the medical field as an example. Assume the physicians are <a href="https://wjso.biomedcentral.com/articles/10.1186/s12957-021-02259-6">detecting tumors in CT scan images</a> using machine learning algorithms. Furthermore, if the physicians submit the <a href="https://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=&amp;ved=2ahUKEwjejoWWm_D3AhV0SfEDHWgADqAQFnoECAMQAQ&amp;url=https%3A%2F%2Fwww.mdpi.com%2F2072-4292%2F12%2F17%2F2670%2Fpdf&amp;usg=AOvVaw2ZqXKQnqMXxfNs-66w3pAx">inference tasks to a central node</a> to complete the computation, the information can be intercepted by an adversary who can reconstruct the input and therefore breach the patient&rsquo;s privacy.</p>
+<p>To demonstrate how simple it is to reconstruct the input from encoded information, we will define two models: the target model and the attacking model. We will specify two parts for the target model. The adversary will capture the output of the first part and exploit it as input to the attacking model. This split architecture simulates distributed forward pass inference, which occurs across numerous network nodes (in our case it will be 2 nodes).</p>
+<p>In reality, the attacker has access to the model and can send inputs to the target model to retrieve the corresponding encoding (first-part network output) and the final result (output of the second part of the network). This means that the attacker can collect training data by submitting a sequence of images to the target model and then capturing the encodings. These encodings will subsequently be used as inputs to the attacking model, and the images that were previously used as inputs to the target model will become the targets.</p>
+<p>Let&rsquo;s move on to coding the attack in Python with <code>torch</code>. For demonstration purposes, our target model will perform the classification of handwritten digits from the <a href="http://yann.lecun.com/exdb/mnist/">MNIST dataset</a>.</p>
+<h2 id="step-1-importing-libraries">Step 1: Importing libraries</h2>
+<p>We start by importing all the libraries we will need for executing the code.</p>
+<pre tabindex="0"><code>import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.optim.lr_scheduler import StepLR
+import matplotlib.pyplot as plt
+</code></pre><h2 id="step-2-target-model-definition">Step 2: Target model definition</h2>
+<p>Our target model will be divided into two parts. The first part will use three convolutional layers, while the second part will use two fully connected layers. To make the transition between the two parts as easy as possible, we need to create a function for flattening the encoding from the convolutional layers.</p>
+<pre tabindex="0"><code>class Flatten(torch.nn.Module):
+    def forward(self, x):
+        batch_size = x.shape[0]
+        return x.view(batch_size, -1)
+</code></pre><p>Now can define the target model as follows.</p>
+<pre tabindex="0"><code>class ClassifierNN(nn.Module):
+    def __init__(self):
+        super(ClassifierNN, self).__init__()
+        self.first_part = nn.Sequential(
+            nn.Conv2d(
+                in_channels=1, out_channels=6, 
+                kernel_size=3, stride=1, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(
+                in_channels=6, out_channels=12, 
+                kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(
+                in_channels=12, out_channels=12, 
+                kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(),
+        )
+        
+        self.second_part = nn.Sequential(
+            Flatten(),
+            nn.Linear(588, 500),
+            nn.LeakyReLU(),
+            nn.Linear(500, 10),
+            nn.Softmax(dim=-1),
+        )
+        
+    def forward(self, x):
+        f = self.first_part(x)
+        return self.second_part(f)
+        
+        
+model = ClassifierNN().cuda()
+</code></pre><h2 id="step-3-training-the-target-model">Step 3: Training the target model</h2>
+<p>With the target model defined, we can train it. Since we will be using the MNIST dataset, we can use <code>torch</code> and download the data simply through its functions. For simplicity, we will use the testing data for training the attacking model later.</p>
+<pre tabindex="0"><code>transform = transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize((0.1307,), (0.3081,))
+            ])
+
+dataset1 = datasets.MNIST(
+    &#39;./data&#39;, train=True, download=True, transform=transform)
+dataset2 = datasets.MNIST(
+    &#39;./data&#39;, train=False, download=True, transform=transform)
+    
+train_loader = torch.utils.data.DataLoader(dataset1, batch_size=32)
+test_loader = torch.utils.data.DataLoader(dataset2, batch_size=16)
+</code></pre><p>Now we can proceed to the training itself.</p>
+<pre tabindex="0"><code>optimizer = optim.Adam(model.parameters(), lr=1e-3)
+scheduler = StepLR(optimizer, step_size=1, gamma=0.7)
+criterion = nn.NLLLoss()
+
+model.train()
+
+for epoch in range(3):
+    for batch_idx, (data, target) in enumerate(train_loader):
+        data, target = data.cuda(), target.cuda()
+        optimizer.zero_grad()
+        output = model(data)
+        loss = criterion(output, target)
+        loss.backward()
+        optimizer.step()
+
+    scheduler.step()
+</code></pre><h2 id="step-4-attack-model-definition">Step 4: Attack model definition</h2>
+<p>To reconstruct the input image from the target model encoding we will use three 2D transposed convolution operators.</p>
+<pre tabindex="0"><code>class AttackerNN(nn.Module):
+    def __init__(self):
+        super(AttackerNN, self).__init__()
+        self.layers = nn.Sequential(
+            nn.ConvTranspose2d(
+                in_channels=12, out_channels=12, 
+                kernel_size=3, stride=2, padding=0),
+            nn.LeakyReLU(),
+            nn.ConvTranspose2d(
+                in_channels=12, out_channels=6, 
+                kernel_size=3, stride=2, padding=2),
+            nn.LeakyReLU(),
+            nn.ConvTranspose2d(
+                in_channels=6, out_channels=1, 
+                kernel_size=4, stride=1, padding=1),
+            nn.LeakyReLU(),
+        )
+        
+    def forward(self, x):
+        return self.layers(x)
+        
+        
+attacker_model = AttackerNN().cuda()
+</code></pre><h2 id="step-5-training-the-attacking-model">Step 5: Training the attacking model</h2>
+<p>With the model defined, we can train it. Notice that we are using the outputs of the first part of the target model as the inputs.</p>
+<pre tabindex="0"><code>optimiser = optim.Adam(attacker_model.parameters(), lr=1e-3)
+criterion = nn.MSELoss()
+
+for epoch in range(10):
+    for batch_idx, (data, _) in enumerate(test_loader):
+        data = data.cuda()
+
+        optimiser.zero_grad()
+
+        target_outputs = model.first_part(data)
+        attack_outputs = attacker_model(target_outputs)
+
+        loss = criterion(data, attack_outputs)
+
+        loss.backward()
+        optimiser.step()
+</code></pre><h2 id="step-6-evaluation">Step 6: Evaluation</h2>
+<p>The successfully trained attacking model can now reconstruct the inputs to the target model purely on its encoding. You can see an example of this attack below.</p>
+<p><img src="/attack.png" alt="Attack evaluation"></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>While the model inversion attack described and demonstrated above does not pose a substantial danger because classification is not tested across several computing nodes in simple machine learning applications, it does demonstrate a vulnerability that machine learning models face. More complex models and applications where the privacy of sensitive information is essential <a href="https://arxiv.org/abs/2201.10787">must be protected</a> from such attacks.</p>
+
+</content>
+<p>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>

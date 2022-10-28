@@ -2,10 +2,29 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://t-c.me/</loc>
+    <lastmod>2022-10-28T17:04:04+02:00</lastmod>
+  </url><url>
+    <loc>https://t-c.me/blog/</loc>
+    <lastmod>2022-10-28T17:04:04+02:00</lastmod>
+  </url><url>
+    <loc>https://t-c.me/blog/mia-classification/</loc>
+    <lastmod>2022-07-08T15:31:00+02:00</lastmod>
+  </url><url>
+    <loc>https://t-c.me/blog/metrics/</loc>
+    <lastmod>2022-07-01T15:31:00+02:00</lastmod>
+  </url><url>
+    <loc>https://t-c.me/blog/deconvolution/</loc>
+    <lastmod>2022-06-02T15:31:00+02:00</lastmod>
+  </url><url>
+    <loc>https://t-c.me/blog/inversion-attack/</loc>
+    <lastmod>2022-05-21T10:00:00+02:00</lastmod>
+  </url><url>
+    <loc>https://t-c.me/blog/how-to-use-gnupg-to-encrypt-and-decrypt-messages/</loc>
+    <lastmod>2021-09-07T19:25:00+02:00</lastmod>
+  </url><url>
     <loc>https://t-c.me/categories/</loc>
   </url><url>
     <loc>https://t-c.me/tags/</loc>
-  </url><url>
-    <loc>https://t-c.me/</loc>
   </url>
 </urlset>

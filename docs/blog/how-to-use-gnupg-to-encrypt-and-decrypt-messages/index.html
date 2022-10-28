@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How to use GnuPG to encrypt and decrypt messages | Tomáš Chobola</title>
+<meta name="title" content="How to use GnuPG to encrypt and decrypt messages" />
+<meta name="description" content="Here&rsquo;s is a short guide on how to use asymmetric encryption using GnuPG.
+The email service as a whole is not secure. If you want to keep your messages private, it is necessary to set up an encrypted messaging system. GnuPG is a cryptographic software that generates public and private keys for encrypting and decrypting data. The private key is essential for decryption as only its owner can read the messages encrypted by the corresponding public key." />
+<meta name="keywords" content="" />
+
+
+<meta property="og:title" content="How to use GnuPG to encrypt and decrypt messages" />
+<meta property="og:description" content="Here&rsquo;s is a short guide on how to use asymmetric encryption using GnuPG.
+The email service as a whole is not secure. If you want to keep your messages private, it is necessary to set up an encrypted messaging system. GnuPG is a cryptographic software that generates public and private keys for encrypting and decrypting data. The private key is essential for decryption as only its owner can read the messages encrypted by the corresponding public key." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://t-c.me/blog/how-to-use-gnupg-to-encrypt-and-decrypt-messages/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2021-09-07T19:25:00+02:00" />
+<meta property="article:modified_time" content="2021-09-07T19:25:00+02:00" />
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="How to use GnuPG to encrypt and decrypt messages"/>
+<meta name="twitter:description" content="Here&rsquo;s is a short guide on how to use asymmetric encryption using GnuPG.
+The email service as a whole is not secure. If you want to keep your messages private, it is necessary to set up an encrypted messaging system. GnuPG is a cryptographic software that generates public and private keys for encrypting and decrypting data. The private key is essential for decryption as only its owner can read the messages encrypted by the corresponding public key."/>
+
+
+
+<meta itemprop="name" content="How to use GnuPG to encrypt and decrypt messages">
+<meta itemprop="description" content="Here&rsquo;s is a short guide on how to use asymmetric encryption using GnuPG.
+The email service as a whole is not secure. If you want to keep your messages private, it is necessary to set up an encrypted messaging system. GnuPG is a cryptographic software that generates public and private keys for encrypting and decrypting data. The private key is essential for decryption as only its owner can read the messages encrypted by the corresponding public key."><meta itemprop="datePublished" content="2021-09-07T19:25:00+02:00" />
+<meta itemprop="dateModified" content="2021-09-07T19:25:00+02:00" />
+<meta itemprop="wordCount" content="514">
+<meta itemprop="keywords" content="" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: rgb(10, 13, 18);
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Tomáš Chobola</h2>
+</a>
+<nav><a href="/">Home</a>
+
+<a href="/"></a>
+
+
+<a href="/blog">Blog</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>How to use GnuPG to encrypt and decrypt messages</h1>
+<p>
+  <i>
+    <time datetime='2021-09-07' pubdate>
+      07 Sep, 2021
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>Here&rsquo;s is a short guide on how to use asymmetric encryption using <a href="https://gnupg.org/">GnuPG</a>.</p>
+<p>The email service as a whole is not secure. If you want to keep your messages private, it is necessary to set up an encrypted messaging system.
+GnuPG is a cryptographic software that generates public and private keys for encrypting and decrypting data. The private key is essential for decryption as only its owner can read the messages encrypted by the corresponding public key.</p>
+<h2 id="step-1-installing-gnupg">Step 1: Installing GnuPG</h2>
+<p>For installing GnuPG, you can use <a href="https://brew.sh/">Homebrew</a> which is an open-source package manager. Homebrew gets installed with the following command.</p>
+<pre tabindex="0"><code>/bin/bash -c &#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)”
+</code></pre><p>Now, you can install GnuPG using Homebrew.</p>
+<pre tabindex="0"><code>brew install gnupg
+</code></pre><h2 id="step-2-setting-up-pgp-key-pair">Step 2: Setting up PGP key-pair</h2>
+<pre tabindex="0"><code>gpg --full-generate-key
+</code></pre><p>The command above allows you to generate the keys while defining their type and <a href="https://en.wikipedia.org/wiki/Key_size#Asymmetric_algorithm_key_lengths">size</a>. For example, you can choose 4096 bits long <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">RSA</a> keys.</p>
+<p>To identify the public key, you need to specify your name and email. This information is then seen by the people that will use your public key.
+To keep the private key protected, you are required to submit a passphrase. Keep it stored somewhere safe as it encrypts your private key on disk.</p>
+<p>Once the pairs are generated, GnuPG outputs a <em>fingerprint</em>, which is the <a href="https://en.wikipedia.org/wiki/Public_key_fingerprint">hash of your public key</a>. Others may use it for validating the correctness of the public key you get in the next step.</p>
+<h2 id="step-3-exporting-public-keys">Step 3: Exporting public keys</h2>
+<p>The following command exports the public key into a file. Remember to specify the email you used during the key generation.</p>
+<pre tabindex="0"><code>gpg --armor --export example@email.net &gt; ~/publickey.asc
+</code></pre><p>The export uses <code>--armor</code> for generating the output in an ASCII-armored format. The default output format is binary, which is hardly readable by many messaging services. For this reason, it is good to convert the binary into a printable character representation.</p>
+<h2 id="step-4-importing-public-keys">Step 4: Importing public keys</h2>
+<p>Once you send the <em>fingerprint</em> and the ASCII file with your public key to someone you want to communicate with, they need to import the key into their system.</p>
+<pre tabindex="0"><code>gpg --import ~/publickey.asc
+</code></pre><p>To validate the imported key, they can find your email and fingerprint in the list of all available keys.</p>
+<pre tabindex="0"><code>gpg --list-keys
+</code></pre><h2 id="step-5-encrypting-messages">Step 5: Encrypting messages</h2>
+<p>To encrypt a message, use the following command where <code>--encrypt</code> specifies encryption, <code>--sign</code> adds your signature to the message, <code>--output</code> defines the output file, and <code>--recipient</code> is used for indicating the recipient&rsquo;s email address (the message will be encrypted with the imported public key corresponding to the address).</p>
+<pre tabindex="0"><code>gpg --encrypt --sign --armor --output ~/encrypted.asc --recipient example@email.net
+</code></pre><p>After executing the command, you can write or paste any text into the terminal. You finish by pressing ctrl+d to exit the edit mode.</p>
+<h2 id="step-6-decrypting-messages">Step 6: Decrypting messages</h2>
+<p>The decryption of files using your private key is as follows.</p>
+<pre tabindex="0"><code>gpg --decrypt ~/encrypted.asc
+</code></pre><h2 id="conclusion">Conclusion</h2>
+<p>The setup is easy and quick. Keep your passphrase with the private key stored somewhere safe and backed up.</p>
+<p>Be aware that PGP encryption isn&rsquo;t perfect. For example, it lacks <a href="https://en.wikipedia.org/wiki/Forward_secrecy">forward secrecy</a>, which means that a successful brute-force attack would compromise your key.</p>
+
+</content>
+<p>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>

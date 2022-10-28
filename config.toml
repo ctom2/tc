@@ -7,3 +7,5 @@ theme = 'hugo-bearblog'
 enableRobotsTXT = true
 
 publishDir = 'docs'
+
+contentDir = 'content'
