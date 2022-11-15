@@ -19,7 +19,9 @@ menu = "main"
 # tags = []
 +++
 
-### I am a PhD student at TU Munich and Helmholtz Zentrum München. 
+<!-- ### I am a PhD student at TU Munich and Helmholtz Zentrum München.  -->
+
+### I am a machine learning researcher at TU Munich and Helmholtz Zentrum München. 
 
 My current research focuses on *computational microscopy* and *biomedical imaging*.
 
