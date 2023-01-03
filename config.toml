@@ -9,3 +9,5 @@ enableRobotsTXT = true
 publishDir = 'docs'
 
 contentDir = 'content'
+
+favicon = "images/favicon.png"
