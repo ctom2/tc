@@ -7,54 +7,5 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 28 Oct 2022 17:04:04 +0200</lastBuildDate><atom:link href="https://t-c.me/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Membership inference attacks on classification models</title>
-      <link>https://t-c.me/blog/mia-classification/</link>
-      <pubDate>Fri, 08 Jul 2022 15:31:00 +0200</pubDate>
-      
-      <guid>https://t-c.me/blog/mia-classification/</guid>
-      <description>Machine learning has enabled a high degree of automation and data modelling in domains such as biology, linguistics and medicine. While the first neural network was created by Frank Rosenblatt in 1957, the real applications of the networks became prominent only in recent years. Two main factors contribute to this advancement: increased computational resources and availability of data. Data can be accessed as easily as ever and is also being produced at an accelerating rate, which allows for creating bigger and better machine learning models.</description>
-    </item>
-    
-    <item>
-      <title>Introduction to machine learning metrics</title>
-      <link>https://t-c.me/blog/metrics/</link>
-      <pubDate>Fri, 01 Jul 2022 15:31:00 +0200</pubDate>
-      
-      <guid>https://t-c.me/blog/metrics/</guid>
-      <description>When evaluating the performance of a machine learning model, the experts must carefully choose the appropriate metrics to determine how effectively their model works. The metrics, unlike the loss functions, are not employed to optimize the model during training as they only indicate how well the model performs. Selecting the correct metric can disclose shortcomings and weaknesses in the model which might not be exposed by only assessing the loss function.</description>
-    </item>
-    
-    <item>
-      <title>Iterative image deconvolution</title>
-      <link>https://t-c.me/blog/deconvolution/</link>
-      <pubDate>Thu, 02 Jun 2022 15:31:00 +0200</pubDate>
-      
-      <guid>https://t-c.me/blog/deconvolution/</guid>
-      <description>One of the most prevalent tasks in computer vision is deblurring and image deconvolution. Algorithms capable of recovering a clear representation from a blurry image can be applied to photos captured with mobile phones&amp;rsquo; cameras as well as professional imaging systems such as microscopes or telescopes.
-Mathematically, the image degradation can be denoted as follows.
-y = x * k + n The blurred image y is formed by first convolving the sharp representation x with some kernel k and then adding noise n (e.</description>
-    </item>
-    
-    <item>
-      <title>Implementing a simple ML model inversion attack</title>
-      <link>https://t-c.me/blog/inversion-attack/</link>
-      <pubDate>Sat, 21 May 2022 10:00:00 +0200</pubDate>
-      
-      <guid>https://t-c.me/blog/inversion-attack/</guid>
-      <description>With the increased use of machine learning applications, concerns about user privacy are emerging. In this post, I will demonstrate a model inversion (MI) attack that can reconstruct the input image solely from encoded information within a neural network.
-Why are inversion attacks problematic? Consider the medical field as an example. Assume the physicians are detecting tumors in CT scan images using machine learning algorithms. Furthermore, if the physicians submit the inference tasks to a central node to complete the computation, the information can be intercepted by an adversary who can reconstruct the input and therefore breach the patient&amp;rsquo;s privacy.</description>
-    </item>
-    
-    <item>
-      <title>How to use GnuPG to encrypt and decrypt messages</title>
-      <link>https://t-c.me/blog/how-to-use-gnupg-to-encrypt-and-decrypt-messages/</link>
-      <pubDate>Tue, 07 Sep 2021 19:25:00 +0200</pubDate>
-      
-      <guid>https://t-c.me/blog/how-to-use-gnupg-to-encrypt-and-decrypt-messages/</guid>
-      <description>Here&amp;rsquo;s is a short guide on how to use asymmetric encryption using GnuPG.
-The email service as a whole is not secure. If you want to keep your messages private, it is necessary to set up an encrypted messaging system. GnuPG is a cryptographic software that generates public and private keys for encrypting and decrypting data. The private key is essential for decryption as only its owner can read the messages encrypted by the corresponding public key.</description>
-    </item>
-    
   </channel>
 </rss>
