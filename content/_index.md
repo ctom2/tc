@@ -52,5 +52,5 @@ I grew up in the Czech Republic, studied computer science in Prague and was fort
 
 ## Theses
 
-- **Master Thesis in Data Engineering and Analytics:** [Adversarial Attacks on Segmentation Models](https://github.com/ctom2/seg-mia)
-- **Bachelor Thesis in Informatics:** [Study of light-by-light scattering with the ATLAS Forward Proton (AFP) Detector at CERN](https://inspirehep.net/files/7bacef0004ceec8cbec2e61a4ecaa00f)
+- **Master Thesis in Data Engineering and Analytics:** Adversarial Attacks on Segmentation Models \[[code](https://github.com/ctom2/seg-mia)\]
+- **Bachelor Thesis in Informatics:** Study of light-by-light scattering with the ATLAS Forward Proton (AFP) Detector at CERN \[[thesis](https://inspirehep.net/files/7bacef0004ceec8cbec2e61a4ecaa00f)\]
